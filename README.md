@@ -34,6 +34,7 @@ A secure and scalable Node.js backend for the Diariq journaling web app. Built w
 diariq-backend/
 ├── config/              # DB and passport setup
 ├── controllers/         # Route logic
+├── extraFunctions/      # extra functions
 ├── middleware/          # Auth & error handling
 ├── models/              # (Optional) DB logic
 ├── routes/              # API endpoints
@@ -41,6 +42,7 @@ diariq-backend/
 ├── .env                 # Environment variables
 ├── app.js               # Express app config
 ├── server.js            # Entry point
+├── LICENSE              # MIT license
 ```
 
 ---
@@ -48,7 +50,7 @@ diariq-backend/
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/yourusername/diariq-backend.git
+git clone https://github.com/EffaOjah/diariq-backend.git
 cd diariq-backend
 npm install
 ```
@@ -68,7 +70,7 @@ EMAIL_USER=youremail@gmail.com
 EMAIL_PASS=yourpassword
 GOOGLE_CLIENT_ID=your_google_id
 GOOGLE_CLIENT_SECRET=your_google_secret
-CLIENT_URL=http://localhost:3000
+CLIENT_URL=http://localhost:5000
 ```
 
 ---
@@ -77,7 +79,7 @@ CLIENT_URL=http://localhost:3000
 
 ```bash
 npm run dev     # with nodemon
-yarn start      # normal start
+npm start      # normal start
 ```
 
 ---
@@ -86,8 +88,10 @@ yarn start      # normal start
 
 ### 📌 Auth
 
-* `POST /api/auth/register`
-* `POST /api/auth/login`
+* `GET /user/register`
+* `POST /user/login`
+* `POST /user/register`
+* `GET /verify-email`
 * `GET /api/auth/google`
 * `GET /api/auth/google/callback`
 * `POST /api/auth/request-set-password` → sends email link
@@ -109,13 +113,15 @@ yarn start      # normal start
 
 ```sql
 CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255) UNIQUE,
-  password VARCHAR(255),
-  name VARCHAR(255),
-  provider VARCHAR(50),
-  provider_id VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  user_id CHAR(36) NOT NULL PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  username VARCHAR(255) NOT NULL,
+  password VARCHAR(255) DEFAULT NULL,
+  name VARCHAR(255) DEFAULT NULL,
+  provider VARCHAR(50) DEFAULT NULL,
+  provider_id VARCHAR(255) DEFAULT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 ```
 
@@ -123,7 +129,7 @@ CREATE TABLE users (
 
 ```sql
 CREATE TABLE diary_entries (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id CHAR(36) NOT NULL PRIMARY KEY,
   user_id INT,
   title VARCHAR(255),
   content TEXT,
@@ -139,7 +145,7 @@ CREATE TABLE diary_entries (
 
 ```sql
 CREATE TABLE email_verification_tokens (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id CHAR(36) NOT NULL PRIMARY KEY,
   user_id INT,
   token VARCHAR(255) NOT NULL,
   expires_at DATETIME NOT NULL,
@@ -153,7 +159,6 @@ CREATE TABLE email_verification_tokens (
 ## ✉️ Email Sending
 
 Uses Nodemailer to send verification links for setting passwords.
-You’ll need to use an app password or a service like Mailgun in production.
 
 ---
 
@@ -161,8 +166,7 @@ You’ll need to use an app password or a service like Mailgun in production.
 
 * Rate limiting for auth routes
 * Password reset flow
-* JWT refresh token support
-* Optional email confirmation at signup
+* JWT refresh token suppor
 
 ---
 
