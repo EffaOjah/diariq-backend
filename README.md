@@ -13,6 +13,7 @@ A secure and scalable Node.js backend for the Diariq journaling web app. Built w
 * Set password flow for social accounts
 * Email verification for setting password
 * Clean project structure and modular routing
+* Email confirmation at signup
 
 ---
 

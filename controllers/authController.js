@@ -8,6 +8,9 @@ const sendEmail = require('../utils/sendEmail');
 // Load emailTemplate
 const loadTemplate = require('../utils/loadTemplate');
 
+// generate jwt token
+const generateToken = require('../utils/generateToken');
+
 // Require userModel
 const { getUserByEmail,
     getUserByUsername,
@@ -99,7 +102,7 @@ const local_user_register_post = async (req, res, next) => {
             VERIFICATION_LINK: `http://localhost:5000/verify-email?token=${token}`
         });
 
-        await sendEmail(email, 'Welcome to Diariq 🎉!', html);
+        await sendEmail(email, 'Welcome to Diariq 🎉!', html, 2, 3000);
 
         return res.status(201).json({ success: true, message: "Account created. Please verify your email." });
     } catch (error) {
@@ -134,4 +137,51 @@ const verifyEmail = async (req, res, next) => {
     }
 };
 
-module.exports = { user_register_get, user_login_get, local_user_register_post, verifyEmail };
+// Post route for local user login
+const local_user_login_post = async (req, res, next) => {
+    const { username, password } = req.body;
+    console.log('Log in details: ', req.body);
+
+    // Check if all details were provided
+    if (!username || !password) {
+        console.log('Please provide all details!');
+        return res.status(400).json({ success: false, message: 'Please provide all details!' });
+    }
+
+    try {
+        // Check username
+        const checkUserByUsername = await getUserByUsername(username);
+        console.log('Check user results: ', checkUserByUsername);
+
+        if (!checkUserByUsername.length) {
+            console.log('User not found!');
+            return res.status(401).json({ success: false, message: 'User not found!' });
+        }
+        let foundUser = checkUserByUsername[0];
+
+        // Now compare passwords
+        const comparePasswords = await bcrypt.compare(password, foundUser.password);
+        if (!comparePasswords) {
+            console.log('Incorrect password!');
+            return res.status(401).json({ success: false, message: 'Incorrect password!' });
+        }
+
+        console.log('Successfully signed user in');
+
+        // Generate JWT for the user
+        const jwtToken = generateToken({
+            userId: foundUser.user_id,
+            username: foundUser.username
+        });
+
+        // Set cookie with the token
+        await res.cookie('jwt_token', jwtToken);
+
+        return res.status(200).json({ success: true, generatedToken: jwtToken });
+    } catch (error) {
+        console.log('Internal server error: ', error);
+        return res.status(500).json({ success: false, message: 'An unexpected error occuredd!' });
+    }
+}
+
+module.exports = { user_register_get, user_login_get, local_user_register_post, verifyEmail, local_user_login_post };
