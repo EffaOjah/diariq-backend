@@ -14,6 +14,7 @@ A secure and scalable Node.js backend for the Diariq journaling web app. Built w
 * Email verification for setting password
 * Clean project structure and modular routing
 * Email confirmation at signup
+* Diary entry encryption using crypto
 
 ---
 
@@ -26,6 +27,7 @@ A secure and scalable Node.js backend for the Diariq journaling web app. Built w
 * JSON Web Tokens
 * Nodemailer (for email)
 * dotenv
+* crypto
 
 ---
 
@@ -72,6 +74,7 @@ EMAIL_PASS=yourpassword
 GOOGLE_CLIENT_ID=your_google_id
 GOOGLE_CLIENT_SECRET=your_google_secret
 CLIENT_URL=http://localhost:5000
+ENTRY_ENCRYPTION_SECRET=your_encryption_secret
 ```
 
 ---
@@ -90,8 +93,9 @@ npm start      # normal start
 ### 📌 Auth
 
 * `GET /user/register`
-* `POST /user/login`
-* `POST /user/register`
+* `POST /api/auth/v1/user/login`
+* `POST /api/auth/v1/user/register`
+* `POST /api/auth/v1/send-verification-email`
 * `GET /verify-email`
 * `GET /api/auth/google`
 * `GET /api/auth/google/callback`
@@ -102,7 +106,8 @@ npm start      # normal start
 ### 📌 Diary
 
 * `GET /api/diary/` → fetch user entries
-* `POST /api/diary/` → create entry
+* `POST /api/v1/add-entry` → create entry
+* `GET /entry/:entryId` → get entry
 * `PUT /api/diary/:id` → update entry
 * `DELETE /api/diary/:id` → delete entry
 

@@ -26,10 +26,10 @@ const getUserByUsername = (username) => {
 }
 
 // Function to create a new user
-const createLocalUser = (name, email, username, password) => {
+const createLocalUser = (userId, name, email, username, password) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const [createUser] = await pool.query('INSERT INTO users (user_id, name, email, username, password) VALUES (UUID(), ?, ?, ?, ?)', [name, email, username, password]);
+            const [createUser] = await pool.query('INSERT INTO users (user_id, name, email, username, password) VALUES (?, ?, ?, ?, ?)', [userId, name, email, username, password]);
             resolve(createUser);
         } catch (error) {
             reject(error);
@@ -38,10 +38,10 @@ const createLocalUser = (name, email, username, password) => {
 }
 
 // Function to insert into the email_verification_tokens table
-const insertVerificationToken = (userId, token, expiresAt) => {
+const insertVerificationToken = (tokenId, userId, token, expiresAt) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const insertToken = await pool.query('INSERT INTO email_verification_tokens (id, user_id, token, expires_at) VALUES (UUID(), ?, ?, ?)', [userId, token, expiresAt]);
+            const insertToken = await pool.query('INSERT INTO email_verification_tokens (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)', [tokenId, userId, token, expiresAt]);
             resolve(insertToken);
         } catch (error) {
             reject(error);
