@@ -108,8 +108,8 @@ npm start      # normal start
 * `GET /api/diary/` → fetch user entries
 * `POST /api/v1/add-entry` → create entry
 * `GET /entry/:entryId` → get entry
-* `PUT /api/diary/:id` → update entry
-* `DELETE /api/diary/:id` → delete entry
+* `POST /api/v1/entry/:entryId` → update entry
+* `POST /api/v1/entry/:entryId/delete` → delete entry
 
 ---
 

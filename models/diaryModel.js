@@ -25,7 +25,33 @@ const getEntryByEntryId = (entryId) => {
     });
 }
 
+// Function to update diary entry
+const updateDiaryEntry = (newTitle, newContent, entryId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const [updateEntry] = await pool.query('UPDATE diary_entries SET title = ?, content = ? WHERE entry_id = ?', [newTitle, newContent, entryId]);
+            resolve(updateEntry);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// Function to delete diary entry
+const deleteDiaryEntry = (entryId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const [deleteEntry] = await pool.query('DELETE FROM diary_entries WHERE entry_id = ?', [entryId]);
+            resolve(deleteEntry);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
 module.exports = {
     insertDiaryEntry,
-    getEntryByEntryId
+    getEntryByEntryId,
+    updateDiaryEntry,
+    deleteDiaryEntry
 }
